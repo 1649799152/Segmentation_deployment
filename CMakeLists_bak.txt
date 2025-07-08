@@ -1,0 +1,62 @@
+# CMake最低版本要求
+cmake_minimum_required(VERSION 3.15)
+
+# 项目名称和C++标准
+project(LV_UNet_Deploy_CPP CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# --- 寻找OpenCV库 ---
+# 你需要将OpenCV的bin目录添加到系统环境变量Path中，或者在这里指定路径
+# 例如: set(OpenCV_DIR E:/libs/opencv/build/x64/vc16/lib)
+#set(OpenCV_DIR "E:/libs/opencv/build/x64/vc16/lib")
+set(OpenCV_DIR "E:/libs/opencv/build") 
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+
+# --- 寻找ONNX Runtime库 ---
+# 我们手动指定ONNX Runtime的路径
+# !!! 请将这里的版本号 1.xx.x 替换为你实际下载的版本号 !!!
+set(ONNXRUNTIME_DIR "E:/libs/onnxruntime-win-x64-gpu-1.18.0") # <--- 修改这里
+
+# 设置ONNX Runtime的头文件目录
+include_directories(${ONNXRUNTIME_DIR}/include)
+# 设置ONNX Runtime的库文件目录
+link_directories(${ONNXRUNTIME_DIR}/lib)
+
+# --- 创建可执行文件 ---
+# 将src/main.cpp编译成一个名为 "run_inference" 的exe文件
+add_executable(run_inference src/main.cpp)
+
+# --- 链接所有需要的库 ---
+target_link_libraries(run_inference
+    # 链接OpenCV的核心库
+    ${OpenCV_LIBS}
+    # 链接ONNX Runtime的核心库
+    onnxruntime
+    # 在Windows上，ONNX Runtime需要这个额外的库
+    onnxruntime_providers_shared
+)
+
+# 在Windows上，为了能找到dll文件，需要将它们的目录复制到输出目录
+# 将OpenCV的dll复制到exe旁边
+# 将OpenCV的dll复制到exe旁边
+add_custom_command(TARGET run_inference POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        # --- 核心修复：我们不再使用变量，直接提供DLL的完整路径 ---
+        "E:/libs/opencv/build/x64/vc16/bin/opencv_world490.dll"
+        $<TARGET_FILE_DIR:run_inference>)
+
+# 将ONNX Runtime的dll复制到exe旁边
+add_custom_command(TARGET run_inference POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${ONNXRUNTIME_DIR}/lib/onnxruntime.dll
+                $<TARGET_FILE_DIR:run_inference>)
+add_custom_command(TARGET run_inference POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${ONNXRUNTIME_DIR}/lib/onnxruntime_providers_shared.dll
+                $<TARGET_FILE_DIR:run_inference>)
+add_custom_command(TARGET run_inference POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${ONNXRUNTIME_DIR}/lib/onnxruntime_providers_cuda.dll
+                $<TARGET_FILE_DIR:run_inference>)

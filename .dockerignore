@@ -1,0 +1,12 @@
+# .dockerignore
+
+# 忽略本地的构建产物
+build/
+
+# 忽略Git目录
+.git/
+.vscode/
+
+# 忽略压缩包文件
+*.zip
+*.tgz

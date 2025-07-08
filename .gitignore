@@ -1,0 +1,24 @@
+# 编译产物
+build/
+**/build/
+Debug/
+Release/
+*.exe
+*.dll
+*.so
+*.obj
+*.lib
+*.a
+
+# VS Code 和其他IDE的配置
+.vscode/
+.idea/
+
+# 下载的依赖库
+onnxruntime-linux-x64-gpu-*/
+onnxruntime-win-x64-gpu-*/
+
+# 日志和临时文件
+*.log
+*.tmp
+*~
