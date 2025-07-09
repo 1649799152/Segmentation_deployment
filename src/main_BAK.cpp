@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
 
     try {
         // --- 1. 初始化阶段 ---
-        Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "LV-UNet-Deploy");
+        Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "LAMFD-UNet-Deploy");
         Ort::SessionOptions session_options;
         session_options.AppendExecutionProvider_CUDA({});
         Ort::Session session(env, model_path, session_options);

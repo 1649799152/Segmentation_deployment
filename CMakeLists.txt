@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 # 项目名称和C++标准
-project(LV_UNet_Deploy_CPP CXX)
+project(LAMFD_UNet_Deploy_CPP CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
